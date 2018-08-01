@@ -126,6 +126,7 @@ function createPC(socketId, isOffer) {
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
     container.setState({ remoteList: remoteList });
+    //container.setState({selfViewSrc: stream.toURL()});
   };
   pc.onremovestream = function (event) {
     console.log('onremovestream', event.stream);
