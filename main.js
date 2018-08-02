@@ -14,7 +14,11 @@ import {
 
 import io from 'socket.io-client';
 
-const socket = io.connect('https://react-native-webrtc.herokuapp.com', {transports: ['websocket']});
+//const socket = io.connect('https://react-native-webrtc.herokuapp.com', {transports: ['websocket']});
+//const socket = io.connect('http://192.168.101.249:4443', {transports: ['websocket']});
+const socket = io.connect('http://43b5a8b2.ngrok.io', {transports: ['websocket']});
+
+// -> localhost:4443
 
 import {
   RTCPeerConnection,
@@ -53,8 +57,8 @@ function getLocalStream(isFront, callback) {
     audio: true,
     video: {
       mandatory: {
-        minWidth: 640, // Provide your own width, height and frame rate here
-        minHeight: 360,
+        minWidth: 480, // Provide your own width, height and frame rate here
+        minHeight: 270,
         minFrameRate: 30,
       },
       facingMode: (isFront ? "user" : "environment"),
