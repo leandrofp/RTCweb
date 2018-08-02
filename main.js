@@ -37,7 +37,7 @@ const configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 const pcPeers = {};
 let localStream;
 
-function getLocalStream(isFront, callback) {
+function getLocalStream(isFront, callback) {  // opciones y conexion
 
   let videoSourceId;
 
@@ -72,7 +72,7 @@ function getLocalStream(isFront, callback) {
   }, logError);
 }
 
-function join(roomID) {
+function join(roomID) {     // se une a la room
   socket.emit('join', roomID, function(socketIds){
     console.log('join', socketIds);
     for (const i in socketIds) {
@@ -82,7 +82,7 @@ function join(roomID) {
   });
 }
 
-function createPC(socketId, isOffer) {
+function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE LA ACTUALIZACION
   const pc = new RTCPeerConnection(configuration);
   pcPeers[socketId] = pc;
 
@@ -132,14 +132,17 @@ function createPC(socketId, isOffer) {
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
     container.setState({ remoteList: remoteList });
-    //container.setState({selfViewSrc: stream.toURL()});
+    
+    console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL')
+
+
   };
   pc.onremovestream = function (event) {
     console.log('onremovestream', event.stream);
   };
 
   pc.addStream(localStream);
-  function createDataChannel() {
+  function createDataChannel() {        // esto crea el chat si no entiendo mal
     if (pc.textDataChannel) {
       return;
     }
@@ -215,7 +218,7 @@ socket.on('leave', function(socketId){
   leave(socketId);
 });
 
-socket.on('connect', function(data) {
+socket.on('connect', function(data) {               //aca termina de crear la conexion con el servidor en node
   console.log('connect');
   getLocalStream(true, function(stream) {
     localStream = stream;
@@ -249,6 +252,12 @@ function getStats() {
 }
 
 let container;
+
+
+
+
+//---------------------------------------------------------------------------------------//
+
 
 const RCTWebRTCDemo = React.createClass({
   getInitialState: function() {
@@ -310,7 +319,7 @@ const RCTWebRTCDemo = React.createClass({
     }
     this.setState({textRoomData, textRoomValue: ''});
   },
-  _renderTextRoom() {
+  _renderTextRoom() {     // carga el chat local
     return (
       <View style={styles.listViewContainer}>
         <ListView
@@ -361,11 +370,11 @@ const RCTWebRTCDemo = React.createClass({
             </TouchableHighlight>
           </View>) : null
         }
-        <RTCView streamURL={this.state.selfViewSrc} style={styles.selfView}/>
+        <RTCView streamURL={this.state.selfViewSrc} style={styles.selfView}/>   
         {
-          mapHash(this.state.remoteList, function(remote, index) {
+          /*mapHash(this.state.remoteList, function(remote, index) {
             return <RTCView key={index} streamURL={remote} style={styles.remoteView}/>
-          })
+          })*/
         }
       </View>
     );
