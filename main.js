@@ -18,7 +18,7 @@ import io from 'socket.io-client';
 
 //const socket = io.connect('https://react-native-webrtc.herokuapp.com', {transports: ['websocket']});
 //const socket = io.connect('http://192.168.101.249:4443', {transports: ['websocket']});
-const socket = io.connect('http://43b5a8b2.ngrok.io', {transports: ['websocket']});
+const socket = io.connect('http://9d253fe1.ngrok.io', {transports: ['websocket']});
 
 // -> localhost:4443
 
@@ -125,16 +125,22 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
     console.log('onsignalingstatechange', event.target.signalingState);
   };
 
-  pc.onaddstream = function (event) {
+  pc.onaddstream = function (event) {             // AGREGAR STREAMS A LA LISTA?
     console.log('onaddstream', event.stream);
     container.setState({info: 'One peer join!'});
 
+
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+
+    if(event.stream._tracks.length>1)           
+    // con 0 nunca pasa porque usa otra funcion, y si hay mas de 1 stream no entra y no guarda esos datos en la app(usaria solo el local)
+    {
+    console.log("PASE")
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
     container.setState({ remoteList: remoteList });
+    }
     
-    console.log('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL')
-
 
   };
   pc.onremovestream = function (event) {
@@ -244,7 +250,8 @@ function getStats() {
   const pc = pcPeers[Object.keys(pcPeers)[0]];
   if (pc.getRemoteStreams()[0] && pc.getRemoteStreams()[0].getAudioTracks()[0]) {
     const track = pc.getRemoteStreams()[0].getAudioTracks()[0];
-    console.log('track', track);
+    console.log("LALALALALALALALALLALALALALALALALALALALALALALALALALALALALALALLALALALALALLALALALALALALALLALALALALALALLALALA")
+    console.log('track', track);                
     pc.getStats(track, function(report) {
       console.log('getStats report', report);
     }, logError);
