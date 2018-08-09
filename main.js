@@ -18,7 +18,7 @@ import io from 'socket.io-client';
 
 //const socket = io.connect('https://react-native-webrtc.herokuapp.com', {transports: ['websocket']});
 //const socket = io.connect('http://192.168.101.249:4443', {transports: ['websocket']});
-const socket = io.connect('http://9d253fe1.ngrok.io', {transports: ['websocket']});
+const socket = io.connect('http://eab73664.ngrok.io', {transports: ['websocket']});
 
 // -> localhost:4443
 
@@ -130,10 +130,24 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
     container.setState({info: 'One peer join!'});
 
 
-    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    //console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    /*if(event.stream._tracks[0].kind == 'video'){        
+        event.stream._tracks[0]._enabled= false;
+        event.stream._tracks[0].muted = true;
 
-    if(event.stream._tracks.length>1)           
-    // con 0 nunca pasa porque usa otra funcion, y si hay mas de 1 stream no entra y no guarda esos datos en la app(usaria solo el local)
+    }*/
+    console.log(event.stream._tracks)
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    console.log(event.stream._tracks.length)
+    console.log(container.state.remoteList)
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
+    let a=1
+
+   if(a)           
+    // pasaria con 0, ignoraria el resto
     {
     console.log("PASE")
     const remoteList = container.state.remoteList;
@@ -246,12 +260,13 @@ function mapHash(hash, func) {
   return array;
 }
 
-function getStats() {
+function getStats() {                                   // SOLO MUESTRA ESTADISTICAS DEL TRACK
   const pc = pcPeers[Object.keys(pcPeers)[0]];
   if (pc.getRemoteStreams()[0] && pc.getRemoteStreams()[0].getAudioTracks()[0]) {
     const track = pc.getRemoteStreams()[0].getAudioTracks()[0];
-    console.log("LALALALALALALALALLALALALALALALALALALALALALALALALALALALALALALLALALALALALLALALALALALALALLALALALALALALLALALA")
-    console.log('track', track);                
+    //console.log("PRIMERO?")
+    //console.log("LALALALALALALALALLALALALALALALALALALALALALALALALALALALALALALLALALALALALLALALALALALALALLALALALALALALLALALA")
+    //console.log('track', track);                
     pc.getStats(track, function(report) {
       console.log('getStats report', report);
     }, logError);
