@@ -18,7 +18,7 @@ import io from 'socket.io-client';
 
 //const socket = io.connect('https://react-native-webrtc.herokuapp.com', {transports: ['websocket']});
 //const socket = io.connect('http://192.168.101.249:4443', {transports: ['websocket']});
-const socket = io.connect('https://f39e280f.ngrok.io', {transports: ['websocket']});
+const socket = io.connect('https://44466883.ngrok.io', {transports: ['websocket']});
 
 // -> localhost:4443
 
@@ -104,6 +104,7 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
   }
 
   pc.onnegotiationneeded = function () {
+
     console.log('onnegotiationneeded');
     if (isOffer) {
       createOffer();
@@ -111,15 +112,17 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
   }
 
   pc.oniceconnectionstatechange = function(event) {
-    console.log('oniceconnectionstatechange', event.target.iceConnectionState);
-    if (event.target.iceConnectionState === 'completed') {
-      setTimeout(() => {
-        getStats();
-      }, 1000);
-    }
-    if (event.target.iceConnectionState === 'connected') {
-      createDataChannel();
-    }
+
+      console.log('oniceconnectionstatechange', event.target.iceConnectionState);
+      if (event.target.iceConnectionState === 'completed') {
+        setTimeout(() => {
+          getStats();
+        }, 1000);
+      }
+      if (event.target.iceConnectionState === 'connected') {
+        createDataChannel();
+      }
+    
   };
   pc.onsignalingstatechange = function(event) {
     console.log('onsignalingstatechange', event.target.signalingState);
@@ -138,8 +141,6 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
 
     }*/
     //console.log(event.stream._tracks , "AFTER")
-    console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
-    //console.log(event.stream._tracks.length)
     //console.log(container.state.remoteList)
     console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
     console.log("LALALALLALALALALALALALLALALALALALALALLLALALALALALALALALALALALALALALALALLALALALALALALALALAL")
@@ -149,18 +150,16 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
     {
     console.log("PASE")
     console.log("PASE")
-    console.log("PASE")
-    console.log("PASE")
-    console.log("PASE")
-    console.log("PASE")
     const remoteList = container.state.remoteList;
     remoteList[socketId] = event.stream.toURL();
     container.setState({ remoteList: remoteList });
     container.setState({a: false})
+    
     }
     else
     {
       event.stream.active= false;
+      //console.log(event.stream)
     }
     
 
@@ -169,7 +168,8 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
     console.log('onremovestream', event.stream);
   };
 
-  pc.addStream(localStream);
+    pc.addStream(localStream);
+
   function createDataChannel() {        // esto crea el chat si no entiendo mal
     if (pc.textDataChannel) {
       return;
@@ -199,43 +199,65 @@ function createPC(socketId, isOffer) {                  // TODO: VER ACA LO DE L
   return pc;
 }
 
-function exchange(data) {
-  const fromId = data.from;
+function exchange(data) {    // DE aca vienen todas las conexiones remotas y aun asi evite las guarde desde add streaming las crea igual
+  const fromId = data.from;   
   let pc;
-  if (fromId in pcPeers) {
-    pc = pcPeers[fromId];
-  } else {
-    pc = createPC(fromId, false);
-  }
 
-  if (data.sdp) {
-    console.log('exchange sdp', data);
-    pc.setRemoteDescription(new RTCSessionDescription(data.sdp), function () {
-      if (pc.remoteDescription.type == "offer")
-        pc.createAnswer(function(desc) {
-          console.log('createAnswer', desc);
-          pc.setLocalDescription(desc, function () {
-            console.log('setLocalDescription', pc.localDescription);
-            socket.emit('exchange', {'to': fromId, 'sdp': pc.localDescription });
+  console.log(container.state.a , "UYYUYUYUYUTYITIUTYIOURTOIQROPTIQUWERIOPUQWOPEIURQOPIWEUROPQIWUERPOQIUERTOPQNEFOJBNQEOGTNK")
+  if(container.state.a){
+    
+    container.setState({a: false})
+    // cuando sale conexion nueva aca entra mas de 1 vez, se ve que en un 1 agrega la conexion, 
+    // y despues la va seteando por la salida afirmativa de (data.sdp)
+    if (fromId in pcPeers) {
+      pc = pcPeers[fromId];
+    } else { 
+        pc = createPC(fromId, false);  
+      }
+    if (data.sdp) {
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+      // console.log('exchange sdp');
+
+      console.log('exchange sdp', data);
+      pc.setRemoteDescription(new RTCSessionDescription(data.sdp), function () {
+        if (pc.remoteDescription.type == "offer")
+          pc.createAnswer(function(desc) {
+            console.log('createAnswer', desc);
+            pc.setLocalDescription(desc, function () {
+              console.log('setLocalDescription', pc.localDescription);
+              socket.emit('exchange', {'to': fromId, 'sdp': pc.localDescription });
+            }, logError);
           }, logError);
-        }, logError);
-    }, logError);
-  } else {
-    console.log('exchange candidate', data);
-    pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+      }, logError);
+    } else {
+      console.log('exchange candidate', data);
+      pc.addIceCandidate(new RTCIceCandidate(data.candidate)); // pasa por aca en ppio cuando recibe de otro emulador
+    }
   }
 }
 
 function leave(socketId) {
   console.log('leave', socketId);
   const pc = pcPeers[socketId];
-  const viewIndex = pc.viewIndex;
-  pc.close();
-  delete pcPeers[socketId];
+  if(pc){                                     // QUITAR SI NO SIRVE ESTE IF
+    const viewIndex = pc.viewIndex;
+    pc.close();
+    delete pcPeers[socketId];
 
-  const remoteList = container.state.remoteList;
-  delete remoteList[socketId]
-  container.setState({ remoteList: remoteList });
+    const remoteList = container.state.remoteList;
+    delete remoteList[socketId]
+    container.setState({ remoteList: remoteList });
+  }
   container.setState({info: 'One peer leave!'});
 }
 
@@ -326,7 +348,7 @@ const RCTWebRTCDemo = React.createClass({
     console.log("NO DEBERIA PASAR POR AQUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     console.log("NO DEBERIA PASAR POR AQUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     console.log("NO DEBERIA PASAR POR AQUI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    
+
     const isFront = !this.state.isFront;
     this.setState({isFront});
     getLocalStream(isFront, function(stream) {
